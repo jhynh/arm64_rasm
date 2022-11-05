@@ -14,13 +14,18 @@ String_Copy:
     STR X21, [SP, #-16]!		// PUSH
     STR X22, [SP, #-16]!		// PUSH
     STR X30, [SP, #-16]!		// PUSH LR
+
     MOV X19, X0             //move X19 into a safer register
 
-	MOV X0, #16 		    //create block for string
+    BL String_Length
+
+    ADD X0, X0, #1
+//	MOV X0, #16 		    //create block for string
 	BL malloc			    //X0 now contains address of 4-byte block requested
+    
 
     LDR X22,=ptrString       //load ptr
-    STR X0,[X22]             //save address of new string
+    STR X0, [X22]             //save address of new string into ptrString
     
     LDR X20,=ptrStart       //load ptr
     STR X22,[X20]            //copy address in X1, creating ptr-> ptr -> starting

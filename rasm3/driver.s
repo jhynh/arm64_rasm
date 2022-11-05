@@ -58,21 +58,35 @@
 //bools
     szTrue:             .asciz "TRUE"
     szFalse:            .asciz "FALSE"
+
 //user input prompts
     szInput1:           .asciz "Enter sz1: "
     szInput2:           .asciz "Enter sz2: "
     szInput3:           .asciz "Enter sz3: "
+
+//user input
+    szUInput:           .asciz "hat."
+    szUInput2:          .asciz "Cat"
+    szUInput3:          .asciz "in the hat."
+
+//pointers
+    qdPtr1:             .quad 0
+    qdPtr2:             .quad 0
+    qdPtr3:             .quad 0
+    qdPtr4:             .quad 0
 //----------------------------------------------------------------------------------------------------
 //VARS
 //----------------------------------------------------------------------------------------------------
+    .align 4
     chLF:       .byte 10    //newline
     chQuote:    .byte 0x22  //quote
-    .align 1
+    .align 4
     sz1:    .skip 21    //var1  "Cat in the hat."
     sz2:    .skip 21    //var2  "Green eggs and ham."
     sz3:    .skip 21    //var3  "cat in the hat."
     sz4:    .skip 21    //var4  [copy]
     szInt:  .skip 21    //var for ascii ints
+    dstPtr: .quad 0
 //----------------------------------------------------------------------------------------------------
     .global _start          //start label
     .text                   //text seg
@@ -216,52 +230,184 @@ print:
 //STRING_COPY(string)
 //----------------------------------------------------------------------------------------------------
 //allocates dynamically the storage to hold to copy of new character. will be using malloc. Double word. copies the character and returns the address of the newly creating string
-    LDR X0,=szPromptB1
-    BL putstring
+    LDR X0,=szPromptB1              //load
+    BL putstring                    //print
     
-    LDR X0,=szPromptB2
-    BL putstring
+    LDR X0,=szPromptB2              //load
+    BL putstring                    //print
     
-    LDR X0,=sz1
-    BL putstring
+    LDR X0,=sz1                     //load
+    BL putstring                    //print
     
-    LDR X0,=chLF
+    LDR X0,=chLF                    //load
+    BL putch                        //print
     
-    BL putch
-    LDR X0,=szPromptB3
-    BL putstring
+    LDR X0,=szPromptB3              //load
+    BL putstring                    //print
 
-    LDR X0,=sz1         //load string to copy
-    BL String_Copy      //branch
-    LDR X0, [X0]        //dereference returned pointer to new address
-    BL putstring        //print
+    LDR X0,=sz1                     //load string to copy
+    BL String_Copy                  //branch link
+//TODO: add a label for the new address
+    LDR X19,=qdPtr1
+    STR X0, [X19]
+    LDR X0,=qdPtr1
+    LDR X0, [X0]                    //dereference returned pointer to new address
+    LDR X0, [X0]
+    BL putstring                    //print
+    LDR X0,=qdPtr1
+    LDR X0,[X0]
+    LDR X0,[X0]
+    BL free
 
-    LDR X0,=chLF
-    BL putch 
+//TODO: without pointer this won't free, also need to free string_substring, return as ptr
+
+    LDR X0,=chLF                    //load
+    BL putch                        //print
 
 //----------------------------------------------------------------------------------------------------
 //STRING_SUBSTRING_1(string, int, int) [from int to int, find it] creates a new string of substring
 //----------------------------------------------------------------------------------------------------
-    LDR X0,=szPromptC1
-    BL putstring
-    LDR X0,=chQuote
-    BL putch
-    LDR X0,=sz3
-    MOV X5, #4
-    MOV X6, #14
-    BL String_Substring_1
+    LDR X0,=szPromptC1              //load
+    BL putstring                    //print
+
+    LDR X0,=chQuote                 //load
+    BL putch                        //print
+    
+    LDR X0,=sz3                     //load
+    MOV X5, #4                      //move first int
+    MOV X6, #14                     //move second int
+    BL String_Substring_1           //branch link
+
+    LDR X19,=qdPtr2
+    STR X0, [X19]
+    LDR X0,=qdPtr2
+    LDR X0, [X0]                    //dereference returned pointer to new address
+    LDR X0, [X0]
+    BL putstring                    //print
+    LDR X0,=qdPtr2
     LDR X0,[X0]
-    BL putstring
-    LDR X0,=chQuote
-    BL putch
-    LDR X0,=chLF
-    BL putch
+    LDR X0,[X0]
+    BL free
+
+    LDR X0,=chQuote                 //load
+    BL putch                        //print
+    
+    LDR X0,=chLF                    //load
+    BL putch                        //print
 
 //----------------------------------------------------------------------------------------------------
 //STRING_SUBSTRING_2(string, "Cat") return bool
 //----------------------------------------------------------------------------------------------------
+    LDR X5,=sz3                     //pass string
+    MOV X6, #7                      //pass index
+    LDR X0,=szPromptC2              //load prompt
+    BL putstring                    //print
+    LDR X0,=chQuote                 //load quote
+    BL putch                        //print
+    LDR X0,=sz3                     //for string_length
+    BL String_Substring_2           //call external func
 
-    MOV X0, #0
-    MOV X8, #93
-    SVC 0
+    LDR X19,=qdPtr3
+    STR X0, [X19]
+    LDR X0,=qdPtr3
+    LDR X0, [X0]                    //dereference returned pointer to new address
+    LDR X0, [X0]
+    BL putstring                    //print
+    LDR X0,=qdPtr3
+    LDR X0,[X0]
+    LDR X0,[X0]
+    BL free
+
+
+    LDR X0,=chQuote                 //load quote
+    BL putch                        //print
+
+    LDR X0,=chLF
+    BL putch
+
+//----------------------------------------------------------------------------------------------------
+//String_CharAt(String, Int)
+//----------------------------------------------------------------------------------------------------
+    LDR X0,=szPromptD
+    BL putstring
+    LDR X0,=chQuote
+    BL putch
+    LDR X5,=sz2
+    MOV X6, #4
+    BL String_CharAt
+
+    LDR X19,=qdPtr4
+    STR X0, [X19]
+    LDR X0,=qdPtr4
+    LDR X0, [X0]                    //dereference returned pointer to new address
+    BL putch                    //print
+    LDR X0,=qdPtr4
+    LDR X0,[X0]
+    BL free
+
+    LDR X0,=chQuote
+    BL putch
+    LDR X0,=chLF
+    BL putch
+//----------------------------------------------------------------------------------------------------
+//String_StartsWith_1(String, int, String)
+//----------------------------------------------------------------------------------------------------
+    LDR X0,=szPromptE1
+    BL putstring
+    LDR X0,=sz1
+    LDR X1,=szUInput
+    MOV X2, #11
+    BL String_StartsWith_1
+    CMP X0, #1
+    B.NE false2
+    LDR X0,=szTrue
+    B endif2
+false2:
+    LDR X0,=szFalse
+endif2:
+    BL putstring
+    LDR X0,=chLF
+    BL putch
+
+
+//----------------------------------------------------------------------------------------------------
+//String_StartsWith_2(String, String)
+//----------------------------------------------------------------------------------------------------
+    LDR X0,=szPromptE2
+    BL putstring
+    LDR X0,=sz1
+    LDR X1,=szUInput2
+    BL String_StartsWith_2
+    CMP X0, #1
+    B.NE false3
+    LDR X0,=szTrue
+    B endif3
+false3:
+    LDR X0,=szFalse
+endif3:
+    BL putstring
+    LDR X0,=chLF
+    BL putch        
+//----------------------------------------------------------------------------------------------------
+//String_EndsWith(String, String)
+//----------------------------------------------------------------------------------------------------
+    LDR X0,=szPromptF
+    BL putstring
+    LDR X0,=sz1
+    LDR X1,=szUInput3
+    BL String_EndsWith
+    CMP X0, #1
+    B.NE false4
+    LDR X0,=szTrue
+    B endif4
+false4:
+    LDR X0,=szFalse
+endif4:
+    BL putstring
+    LDR X0,=chLF
+    BL putch
+
+    MOV X0, #0				    	//use 0 return code
+    MOV X8, #93					    //service code 93 terminate
+    SVC 0				    		//call linux to terminate
     .end

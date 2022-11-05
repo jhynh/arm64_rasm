@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------------------------------------------
-//search for the window from X1 to X2, and return the substring in X0. be sure to allocate a new block in heap
+//search for the window from X5 to X6, and return the substring in X0. be sure to allocate a new block in heap
 //--------------------------------------------------------------------------------------------------------------------------
     .data
     ptrString:      .quad 0 //ptr to traverse blocks
@@ -15,12 +15,11 @@ String_Substring_1:
     STR X22, [SP, #-16]!		    // PUSH for counter
     STR X23, [SP, #-16]!		    // PUSH for var
     STR X30, [SP, #-16]!		    // PUSH LR
-
+    
     MOV X23, X0
-
-    MOV X0, #16 		            //create block for string
+    BL String_Length
+    ADD X0, X0, #1
 	BL malloc			            //X0 now contains address of 4-byte block requested
-
     LDR X19,=ptrString              //load ptr
     STR X0,[X19]                    //save the address of new string
 
@@ -34,13 +33,13 @@ loop:
     CMP X21, #0                     //see if null
     B.EQ done                       //done
 
-    CMP X22, X5                     //compare the current index to starting
     ADD X22, X22, #1                //increase counter
+    CMP X22, X5                     //compare the current index to starting
     B.GT store                      //if it's greater than the index, continue until null byte
     B loop
 store:
-    STRB W21, [X0], #1
-    B loop
+    STRB W21, [X0], #1              //store a byte and increment index
+    B loop                          //loop
 done:
     LDR X0,=ptrStart
     LDR X0,[X0]
