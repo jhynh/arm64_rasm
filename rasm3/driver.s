@@ -1,3 +1,13 @@
+//***************************************************************************** 
+//Names: Homayoun Nistanaki, Jason Huynh
+//Program:  RASM3.s 
+//Class: CS 3B 
+//Lab:  RASM3 
+//Date: November 5, 2022 at 11:00 PM 
+//Purpose: 
+// practice creating external functions along side memory manipulation by creating
+// functions instructed by Jeff Barnett
+//******************************************************************************/
     .data               //data seg
 //----------------------------------------------------------------------------------------------------
 //PROMPTS
