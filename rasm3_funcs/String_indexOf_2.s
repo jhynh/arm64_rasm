@@ -26,7 +26,7 @@ String_indexOf_2:
 	LDR	X1,[X1]		// point to X1 address
 	LDRB 	W1,[X1]		// point to W1 address
 	ADD	X0,X0,X2	// add to get bytes
-
+//this2 IO
 loop:
 	LDRB W2,[X0],#1		// point to W2 and increment
 	CMP	X2,X1		// compare

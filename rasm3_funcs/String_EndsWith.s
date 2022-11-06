@@ -2,7 +2,7 @@
 
 .global String_EndsWith
 .text
-//pass string in X0 and X1
+//pass string in X0 and X1 and finds if the string ends with substring
 String_EndsWith:
     STR X19, [SP,#-16]!     //push
     STR X20, [SP,#-16]!     //push
@@ -30,15 +30,14 @@ String_EndsWith:
 traverse:
     //subtract the substring from the string and parse them from that index
     //traverse using X23
-    LDRB W24, [X19], #1
-    SUB X23, X23, #1
-    CMP X23, #0
-    B.EQ loop
-    B traverse
+    LDRB W24, [X19], #1     //load byte and traverse
+    SUB X23, X23, #1        //reduce counter
+    CMP X23, #0             //compare if null
+    B.EQ loop               //loop
+    B traverse              //done
 
 //now at proper pos
 loop:
-    //our counter is length of X1, so we traverse until it reaches zero.
     LDRB W25,[X19],#1       //grab a byte (original)
     LDRB W26,[X20],#1       //grab a byte (quaried)
 
@@ -51,11 +50,10 @@ loop:
     B loop                  //loop
 
 false:
-    MOV X0, #0
-    B done
-    //always returns true unless mismatch
+    MOV X0, #0              //load false
+    B done                  //done
 true:
-    MOV X0, #1
+    MOV X0, #1             //true
 done:
     LDR X30,[SP], #16       //pop
     LDR X29,[SP], #16       //pop

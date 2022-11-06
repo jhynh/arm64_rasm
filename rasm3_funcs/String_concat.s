@@ -18,14 +18,14 @@ String_concat:
     LDR 	X3,=ptrStringB          // point to ptrStringB
     STR 	X1,[X3]            	// store X3 address
     STR		LR,[SP,#-16]!	    	// push to stack
-    BL  	strlength           	// get string length
+    BL  	String_Length           	// get string length
 
     LDR		LR,[SP],#16	    	// pop from stakc
     MOV 	X4,X2              	// move X2 to X4
     LDR 	X0,=ptrStringB     	// point to ptrStringB
     LDR 	X0,[X0]            	// point to X0 address
     STR		LR,[SP,#-16]!	    	// push to stack
-    BL 		strlength            	// get string length
+    BL 		String_Length            	// get string length
 
     LDR 	LR,[SP],#16	    	// pop from stack
     ADD 	X4,X4,X2          	// add lengths

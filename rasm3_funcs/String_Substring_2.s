@@ -13,9 +13,9 @@
     STR X30, [SP,#-16]!     //push
 
     MOV X19, X5             //move input into another register
-    BL String_Length
+    BL String_Length        //get length
 
-    ADD X0, X0, #1
+    ADD X0, X0, #1          //add for nullbyte
     BL malloc               //create mem in the heap at X0
     
     LDR X20,=ptrString      //load ptr into X20
@@ -39,12 +39,12 @@ loop:
     B loop                  //loop
 
 exit:
-    LDR X0,=ptrStart
-    LDR X0,[X0]
-    LDR X30,[SP], #16
-    LDR X22,[SP], #16
-    LDR X21,[SP], #16
-    LDR X20,[SP], #16
-    LDR X19,[SP], #16
-    RET LR
+    LDR X0,=ptrStart        //load answer
+    LDR X0,[X0]             //dereference once
+    LDR X30,[SP], #16       //pop
+    LDR X22,[SP], #16       //pop
+    LDR X21,[SP], #16       //pop
+    LDR X20,[SP], #16       //pop
+    LDR X19,[SP], #16       //pop
+    RET LR                  //return
     .end

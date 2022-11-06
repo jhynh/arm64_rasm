@@ -34,10 +34,10 @@ check:
     B.EQ true                //branch if equal
     B false
 false:
-    MOV X0, #0
-    B exit
+    MOV X0, #0               //load false
+    B exit                   //exit
 true:
-    MOV X0, #1
+    MOV X0, #1               //load true
 
 exit:
     LDR X20, [SP], #16       //restore

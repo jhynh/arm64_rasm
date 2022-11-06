@@ -77,10 +77,9 @@
 //----------------------------------------------------------------------------------------------------
 //VARS
 //----------------------------------------------------------------------------------------------------
-    .align 4
     chLF:       .byte 10    //newline
     chQuote:    .byte 0x22  //quote
-    .align 4
+    chSQuote:   .byte 0x27  //single
     sz1:    .skip 21    //var1  "Cat in the hat."
     sz2:    .skip 21    //var2  "Green eggs and ham."
     sz3:    .skip 21    //var3  "cat in the hat."
@@ -88,6 +87,42 @@
     szInt:  .skip 21    //var for ascii ints
     dstPtr: .quad 0
 //----------------------------------------------------------------------------------------------------
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
+    szStr1:		.skip 	21
+    szStr2: 	.skip 	21
+    szStr3: 	.skip 	21
+    .align 4
+    szResult:	.skip 	24
+    szTemp1: 	.asciz 	"eggs"
+    szTemp2: 	.asciz 	"egg"
+    szTemp3: 	.asciz 	" "
+
+    szMsg13: 	.asciz 	"String_indexOf_1(s2,'g') = "
+    szMsg14: 	.asciz 	"String_indexOf_2(s2,'g',9) = "
+    szMsg15: 	.asciz 	"String_indexOf_3(s2,'eggs') = "
+    szMsg16: 	.asciz 	"String_lastIndexOf_1(s2,'g') = "
+    szMsg17: 	.asciz 	"String_lastIndexOf_2(s2,'g',6) = "
+    szMsg18: 	.asciz 	"String_lastIndexOf_3(s2,'egg') = "
+    szMsg19: 	.asciz 	"String_replace(s1,'a','o') = "
+    szMsg20: 	.asciz 	"String_toLowerCase(s1) = "
+    szMsg21: 	.asciz 	"String_toUpperCase(s1) = "
+    szMsg22: 	.asciz 	"String_concat(s1, ' ');"
+    szMsg23: 	.asciz 	"String_concat(s1, s2) = "
+
+    szMsg1: 	.asciz 	"Enter String 1: "
+    szMsg2: 	.asciz 	"Enter String 2: "
+    szMsg3: 	.asciz 	"Enter String 3: "
+
+//    chLF: 		.byte	10
+    chLetter:	.skip	1
+    index: 		.quad 	0
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
+//****************************************************************************************************
     .global _start          //start label
     .text                   //text seg
 _start:                     //program start
@@ -247,19 +282,16 @@ print:
 
     LDR X0,=sz1                     //load string to copy
     BL String_Copy                  //branch link
-//TODO: add a label for the new address
-    LDR X19,=qdPtr1
-    STR X0, [X19]
-    LDR X0,=qdPtr1
+    LDR X19,=qdPtr1                 //load var
+    STR X0, [X19]                   //store
+    LDR X0,=qdPtr1                  //load
     LDR X0, [X0]                    //dereference returned pointer to new address
-    LDR X0, [X0]
+    LDR X0, [X0]                    //dereference
     BL putstring                    //print
-    LDR X0,=qdPtr1
-    LDR X0,[X0]
-    LDR X0,[X0]
-    BL free
-
-//TODO: without pointer this won't free, also need to free string_substring, return as ptr
+    LDR X0,=qdPtr1                  //load
+    LDR X0,[X0]                     //dereference
+    LDR X0,[X0]                     //dereference
+    BL free                         //free
 
     LDR X0,=chLF                    //load
     BL putch                        //print
@@ -278,16 +310,16 @@ print:
     MOV X6, #14                     //move second int
     BL String_Substring_1           //branch link
 
-    LDR X19,=qdPtr2
-    STR X0, [X19]
-    LDR X0,=qdPtr2
+    LDR X19,=qdPtr2                 //load
+    STR X0, [X19]                   //dereference
+    LDR X0,=qdPtr2                  //load
     LDR X0, [X0]                    //dereference returned pointer to new address
-    LDR X0, [X0]
+    LDR X0, [X0]                    //dereference
     BL putstring                    //print
-    LDR X0,=qdPtr2
-    LDR X0,[X0]
-    LDR X0,[X0]
-    BL free
+    LDR X0,=qdPtr2                  //load
+    LDR X0,[X0]                     //dereference
+    LDR X0,[X0]                     //dereference
+    BL free                         //load
 
     LDR X0,=chQuote                 //load
     BL putch                        //print
@@ -307,105 +339,367 @@ print:
     LDR X0,=sz3                     //for string_length
     BL String_Substring_2           //call external func
 
-    LDR X19,=qdPtr3
-    STR X0, [X19]
-    LDR X0,=qdPtr3
+    LDR X19,=qdPtr3                 //load
+    STR X0, [X19]                   //dereference
+    LDR X0,=qdPtr3                  //load
     LDR X0, [X0]                    //dereference returned pointer to new address
-    LDR X0, [X0]
+    LDR X0, [X0]                    //dereference
     BL putstring                    //print
-    LDR X0,=qdPtr3
-    LDR X0,[X0]
-    LDR X0,[X0]
-    BL free
+    LDR X0,=qdPtr3                  //load
+    LDR X0,[X0]                     //dereference
+    LDR X0,[X0]                     //dereference
+    BL free                         //free
 
 
     LDR X0,=chQuote                 //load quote
     BL putch                        //print
 
-    LDR X0,=chLF
-    BL putch
+    LDR X0,=chLF                    //load
+    BL putch                        //print
 
 //----------------------------------------------------------------------------------------------------
 //String_CharAt(String, Int)
 //----------------------------------------------------------------------------------------------------
-    LDR X0,=szPromptD
-    BL putstring
-    LDR X0,=chQuote
-    BL putch
-    LDR X5,=sz2
-    MOV X6, #4
-    BL String_CharAt
+    LDR X0,=szPromptD               //load
+    BL putstring                    //print
+    LDR X0,=chSQuote                 //load
+    BL putch                        //print
+    LDR X5,=sz2                     //load
+    MOV X6, #4                      //load
+    BL String_CharAt                //branch
 
-    LDR X19,=qdPtr4
-    STR X0, [X19]
-    LDR X0,=qdPtr4
+    LDR X19,=qdPtr4                 //load
+    STR X0, [X19]                   //store and dereference ptr
+    LDR X0,=qdPtr4                  //load
     LDR X0, [X0]                    //dereference returned pointer to new address
-    BL putch                    //print
-    LDR X0,=qdPtr4
-    LDR X0,[X0]
-    BL free
+    BL putch                        //print
+    LDR X0,=qdPtr4                  //load
+    LDR X0,[X0]                     //dereference
+    BL free                         //free
 
-    LDR X0,=chQuote
-    BL putch
-    LDR X0,=chLF
-    BL putch
+    LDR X0,=chSQuote                 //load
+    BL putch                        //print
+    LDR X0,=chLF                    //load
+    BL putch                        //print
 //----------------------------------------------------------------------------------------------------
 //String_StartsWith_1(String, int, String)
 //----------------------------------------------------------------------------------------------------
-    LDR X0,=szPromptE1
-    BL putstring
-    LDR X0,=sz1
-    LDR X1,=szUInput
-    MOV X2, #11
-    BL String_StartsWith_1
-    CMP X0, #1
-    B.NE false2
-    LDR X0,=szTrue
-    B endif2
+    LDR X0,=szPromptE1              //load
+    BL putstring                    //print
+    LDR X0,=sz1                     //load
+    LDR X1,=szUInput                //load
+    MOV X2, #11                     //load
+    BL String_StartsWith_1          //branch
+    CMP X0, #1                      //compare
+    B.NE false2                     //branch false
+    LDR X0,=szTrue                  //load true
+    B endif2                        //end
 false2:
-    LDR X0,=szFalse
+    LDR X0,=szFalse                 //load false
 endif2:
-    BL putstring
-    LDR X0,=chLF
-    BL putch
+    BL putstring                    //print result
+    LDR X0,=chLF                    //load
+    BL putch                        //print
 
 
 //----------------------------------------------------------------------------------------------------
 //String_StartsWith_2(String, String)
 //----------------------------------------------------------------------------------------------------
-    LDR X0,=szPromptE2
-    BL putstring
-    LDR X0,=sz1
-    LDR X1,=szUInput2
-    BL String_StartsWith_2
-    CMP X0, #1
-    B.NE false3
-    LDR X0,=szTrue
-    B endif3
+    LDR X0,=szPromptE2              //load
+    BL putstring                    //print
+    LDR X0,=sz1                     //load
+    LDR X1,=szUInput2               //load
+    BL String_StartsWith_2          //branch link
+    CMP X0, #1                      //compare result
+    B.NE false3                     //branch false
+    LDR X0,=szTrue                  //load true
+    B endif3                        //endif
 false3:
-    LDR X0,=szFalse
+    LDR X0,=szFalse                 //load false
 endif3:
-    BL putstring
-    LDR X0,=chLF
-    BL putch        
+    BL putstring                    //print
+    LDR X0,=chLF                    //load newline
+    BL putch                        //print
 //----------------------------------------------------------------------------------------------------
 //String_EndsWith(String, String)
 //----------------------------------------------------------------------------------------------------
-    LDR X0,=szPromptF
-    BL putstring
-    LDR X0,=sz1
-    LDR X1,=szUInput3
-    BL String_EndsWith
-    CMP X0, #1
-    B.NE false4
-    LDR X0,=szTrue
-    B endif4
+    LDR X0,=szPromptF               //load prompt
+    BL putstring                    //print
+    LDR X0,=sz1                     //load
+    LDR X1,=szUInput3               //load
+    BL String_EndsWith              //branch
+    CMP X0, #1                      //compare result
+    B.NE false4                     //branch false
+    LDR X0,=szTrue                  //load true
+    B endif4                        //end
 false4:
-    LDR X0,=szFalse
+    LDR X0,=szFalse                 //load false
 endif4:
-    BL putstring
-    LDR X0,=chLF
-    BL putch
+    BL putstring                    //print
+    LDR X0,=chLF                    //load newline
+    BL putch                        //print
+
+//----------------------------------------------------------------------------------------------------
+//String_indexOf_1(String, char)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0, =szMsg16	// point to szMsg16
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=chLetter	// point to chLetter
+	MOV 	X6,'g'		// point to 'g'
+	STRB 	W6,[X1]		// load W6
+	BL 	String_lastIndexOf_1	// send to function
+
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// load X0
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR 	X0,[X0]		// dereference X0
+    SUB     X0, X0, #1
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+//----------------------------------------------------------------------------------------------------
+//String_indexOf_2(String, char, int)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+	LDR 	X0,=szMsg14	// point to szMsg14
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=chLetter	// point to chLetter
+	MOV 	X3,'g'		// point to 'g'
+	STRB 	W3,[X1]		// load W3
+	MOV 	X2,#9		// point to '9'
+	BL 	String_indexOf_2	// send to function
+
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// load index
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR 	X0,[X0]		// dereference X0
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+//----------------------------------------------------------------------------------------------------
+//String_indexOf_3(String, String)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+	LDR 	X0,=szMsg15	// point to szMsg15
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=szTemp1	// point to szTemp1
+	BL 	String_indexOf_3	// send to function
+
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// point X0
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR	X0,[X0]		// dereference X0
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+//----------------------------------------------------------------------------------------------------
+//String_lastIndexof_1(String, char)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=chLF	// point to chLF
+	BL 	putch 		// print char
+
+	LDR 	X0, =szMsg16	// point to szMsg16
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=chLetter	// point to chLetter
+	MOV 	X6,'g'		// point to 'g'
+	STRB 	W6,[X1]		// load W6
+
+	BL 	String_lastIndexOf_1	// send to function
+
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// load X0
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR 	X0,[X0]		// dereference X0
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+	LDR 	X0,=chLF 	// point to chLf
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_lastIndexof_2(String, char, int)
+//----------------------------------------------------------------------------------------------------
+	LDR 	X0,=szMsg17	// point to szMsg17
+	BL	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=chLetter	// point to chLetter
+	MOV 	X3,'g'		// point to 'g'
+	STRB 	W3,[X1]		// store W3
+	MOV 	X2,#6		// point to '6'
+	BL 	String_lastIndexOf_2	// send to function
+
+	SUB 	X0,X0,#3
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// store to X0
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR 	X0,[X0]		// dereference X0
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_lastIndexof_3(String, String)
+//----------------------------------------------------------------------------------------------------
+	LDR 	X0,=szMsg18	// point to szMsg18
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz2	// point to szStr2
+	LDR 	X1,=szTemp2	// point to szTemp2
+	BL 	String_lastIndexOf_3	// send to function
+
+	LDR 	X1,=index	// point to index
+	STR 	X0,[X1]		// store X0
+	LDR 	X1,=szResult	// point to szResult
+	LDR 	X0,=index	// point to index
+	LDR 	X0,[X0]		// dereference X0
+	BL 	int64asc	// convert
+
+	LDR 	X0,=szResult	// point to szResult
+	BL 	putstring	// print string
+
+	LDR 	X0,=chLF 	// point ot chLF
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_replace(String, char, char)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=szMsg19	// point to szMsg19
+	BL 	putstring	// print string
+    LDR     X0,=chQuote // load quote
+    BL      putch   // print char
+
+	LDR 	X0,=sz1	// point to szStr1
+	MOV 	X1,'a'		// point to 'a'
+	MOV 	X2,'o'		// point to 'o'
+	BL 	String_replace	// send to function
+
+	LDR 	X0,=sz1	// point to szStr1
+	BL 	putstring	// print string
+
+    LDR     X0,=chQuote // load quote
+    BL      putch   // print char
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_toLowerCase(String)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=szMsg20	// point ot szMsg20
+	BL 	putstring	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR 	X0,=sz1	// point to szStr1
+	BL 	String_toLowerCase	// send to function
+
+	LDR 	X0,=sz1	// point to szStr1
+	BL 	putstring	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_toUpperCase(String)
+//----------------------------------------------------------------------------------------------------
+
+	LDR 	X0,=szMsg21	// point to szMsg21
+	BL 	putstring	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR 	X0,=sz1	// point to szStr1
+	BL 	String_toUpperCase	// send to function
+
+	LDR 	X0,=sz1	// point to szStr1
+	BL 	putstring 	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+//----------------------------------------------------------------------------------------------------
+//String_concat(String, String)
+//----------------------------------------------------------------------------------------------------
+	LDR 	X0,=szMsg22	// point to szMsg22
+	BL 	putstring	// print string
+
+	LDR 	X0,=sz1	// point to szStr1
+	LDR 	X1,=szTemp3	// point to szTemp3
+	BL 	String_concat	// send to function
+
+	LDR 	X1,=szResult	// point to szResult
+	STR 	X0,[X1]		// store X0
+	LDR 	X0,=chLF 	// point to chLF
+	BL 	putch 		// print char
+
+// String_concat
+	LDR 	X0,=szMsg23	// point to szMsg23
+	BL 	putstring	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR 	X0,=szResult	// point to szResult
+	LDR 	X0,[X0]		// dereference X0
+	LDR 	X1,=sz2	// point to szStr2
+	BL 	String_concat	// send to function
+
+	LDR 	X1,=szResult	// point to szResult
+	STR 	X0,[X1]		// store X0
+	LDR 	X0,=szResult	// point to szResult
+	LDR 	X0,[X0]		// dereference X0
+	BL 	putstring	// print string
+
+    LDR X0,=chQuote //load
+    BL putch        //print
+
+	LDR X0, =chLF 		// point to chLF
+	BL putch 		// print char
+
 
     MOV X0, #0				    	//use 0 return code
     MOV X8, #93					    //service code 93 terminate

@@ -23,7 +23,7 @@ String_indexOf_1:
 	LDR	X1,=ptrChar	// point to ptrChar
 	LDR	X1,[X1]		// point to address
 	LDRB 	W1,[X1]		// point to W1
-
+//this1 IO
 loop:
 	LDRB 	W2,[X0], #1	// point to byte and increment
 	CMP	X2,X1		// compare

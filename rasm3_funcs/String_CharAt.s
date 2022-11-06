@@ -17,12 +17,12 @@ String_CharAt:
     STR X29, [SP,#-16]!     //push
     STR X30, [SP,#-16]!     //push
 
-    ADD X6, X6, #1
-    MOV X19, X5
-    MOV X0, #2
-    BL malloc
-    LDR X25,=ptrCh
-    STR X0,[X25]
+    ADD X6, X6, #1          //to index
+    MOV X19, X5             //move to safer place
+    MOV X0, #2              //move #2 in, for null byte
+    BL malloc               //allocate
+    LDR X25,=ptrCh          //load
+    STR X0,[X25]            //store
 
 traverse:
     //our counter is X6 already, so we traverse until it reaches zero.
@@ -33,8 +33,8 @@ traverse:
     B traverse              //loop
 
 done:
-    STRB W22, [X0]
-    LDR X0,=ptrCh
+    STRB W22, [X0]          //store answer
+    LDR X0,=ptrCh           //load ptr
     LDR X0,[X0]             //grab char & exit
     LDR X30,[SP], #16       //pop
     LDR X29,[SP], #16       //pop

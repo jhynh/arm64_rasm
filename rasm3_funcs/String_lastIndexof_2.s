@@ -30,7 +30,7 @@ String_lastIndexOf_2:
 	MOV 	X5,#0		// set X5 to 0
 	ADD	X0,X0,X2	// increment
 	MOV 	X8,X2           // move X2 to X8
-
+//this LIO2
 loop:
 	LDRB 	W2,[X0],#1	// point to W2 an increment
 	CMP	X2,X1		// compare

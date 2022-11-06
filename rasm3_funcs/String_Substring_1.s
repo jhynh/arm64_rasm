@@ -16,9 +16,9 @@ String_Substring_1:
     STR X23, [SP, #-16]!		    // PUSH for var
     STR X30, [SP, #-16]!		    // PUSH LR
     
-    MOV X23, X0
-    BL String_Length
-    ADD X0, X0, #1
+    MOV X23, X0                     //move to safer register
+    BL String_Length                //get length
+    ADD X0, X0, #1                  //add for null byte
 	BL malloc			            //X0 now contains address of 4-byte block requested
     LDR X19,=ptrString              //load ptr
     STR X0,[X19]                    //save the address of new string
@@ -41,8 +41,8 @@ store:
     STRB W21, [X0], #1              //store a byte and increment index
     B loop                          //loop
 done:
-    LDR X0,=ptrStart
-    LDR X0,[X0]
+    LDR X0,=ptrStart                //load
+    LDR X0,[X0]                     //dereference and load
     LDR X30, [SP], #16			    // POP print
     LDR X23, [SP], #16			    // POP print
     LDR X22, [SP], #16			    // POP print

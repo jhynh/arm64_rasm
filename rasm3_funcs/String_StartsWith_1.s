@@ -44,11 +44,11 @@ loop:
     B loop                  //loop
 
 false:
-    MOV X0, #0
+    MOV X0, #0              //load false
     B done
     //always returns true unless mismatch
 true:
-    MOV X0, #1
+    MOV X0, #1              //load true
 done:
     LDR X30,[SP], #16       //pop
     LDR X29,[SP], #16       //pop
